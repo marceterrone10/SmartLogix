@@ -1,7 +1,8 @@
 import Ticket from '../models/ticket.model.js';
 import mongoose from 'mongoose';
+import { ApiError } from '../utils/apiError.js';
 
-export const createTicket = async (req, res) => {
+export const createTicket = async (req, res, next) => {
     const { title, description, priority, category, assignedTo } = req.body;
 
     try {
@@ -33,13 +34,11 @@ export const createTicket = async (req, res) => {
 
     } catch (error) {
         console.error('Error creating ticket:', error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+        next(error);
     };
 };
 
-export const getTickets = async (req, res) => {
+export const getTickets = async (req, res, next) => {
 
     try {
         const tickets = await Ticket.find().populate('createdBy', 'name email').populate('assignedTo', 'name email');
@@ -67,23 +66,18 @@ export const getTickets = async (req, res) => {
         }
         )
     } catch (error) {
-        console.error('Error retrieving tickets:', error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+        next(error);
     };
 };
 
-export const getTicketById = async (req, res) => {
+export const getTicketById = async (req, res, next) => {
     const { id } = req.params;
 
     try {
         const ticket  = await Ticket.findById(id).populate('createdBy', 'name email').populate('assignedTo', 'name email');
 
         if (!ticket) {
-            return res.status(404).json({
-                message: 'Ticket not found'
-            });
+            throw new ApiError(404, 'Ticket not found');
         };
 
         res.status(200).json({
@@ -110,13 +104,11 @@ export const getTicketById = async (req, res) => {
 
     } catch ( error ) {
         console.error('Error retrieving ticket by ID:', error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+        next(error);
     };
 };
 
-export const updateTicket = async (req, res) => {
+export const updateTicket = async (req, res, next) => {
     const { id } = req.params;
     const updatedTicketData = req.body;
 
@@ -124,9 +116,7 @@ export const updateTicket = async (req, res) => {
         const ticketUpdated = await Ticket.findByIdAndUpdate(id, updatedTicketData, { new: true }).populate('createdBy', 'name email').populate('assignedTo', 'name email');
 
         if (!ticketUpdated) {
-            return res.status(404).json({
-                message: 'Ticket not found'
-            });
+            throw new ApiError(404, 'Ticket not found');
         };
 
         res.status(200).json({
@@ -136,26 +126,22 @@ export const updateTicket = async (req, res) => {
 
     } catch ( error ) {
         console.error('Error updating ticket:', error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+        next(error);
     };
 };
 
-export const cancelTicket = async (req, res) => {
+export const cancelTicket = async (req, res, next) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: 'Invalid ticket ID' });
+        throw new ApiError(400, 'Invalid ticket ID');
     }
 
     try {
         const ticket = await Ticket.findById(id);
 
         if (!ticket) {
-            return res.status(404).json({
-                message: 'Ticket not found'
-            });
+            throw new ApiError(404, 'Ticket not found');
         }
 
         ticket.status = 'cancelled';
@@ -171,8 +157,6 @@ export const cancelTicket = async (req, res) => {
         });
     } catch ( error ) {
         console.error('Error cancelling ticket:', error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+        next(error);
     }
 };

@@ -22,7 +22,7 @@ export const ticketSchema = Joi.object({
         'any.default': 'Status is set to open by default'
     }),
 
-    category:  Joi.string().valid('software', 'hardware', 'network', 'other').default('other').messsages({
+    category:  Joi.string().valid('software', 'hardware', 'network', 'other').default('other').messages({
         'any.only': 'Category must be one of the following: software, hardware, network, other',
         'any.default': 'Category is set to other by default'
     }),

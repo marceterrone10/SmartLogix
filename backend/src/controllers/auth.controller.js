@@ -2,19 +2,19 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from '../models/user.model.js';
 import dotenv from 'dotenv';
+import { ApiError } from '../utils/apiError.js';
+
 dotenv.config();
 
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
     const { email, password, role } = req.body 
 
     try {
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            return res.status(400).json({
-                message: 'User already exists'
-            });
+            throw new ApiError(400, 'User with this email already exists');
         };
 
         const hash = await bcrypt.hash(password, 10);
@@ -35,31 +35,24 @@ export const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error during registration:', error);
-        return res.status(500).json(
-            { message: 'Internal server error' }
-        );
+        next(error);
     }
 };
 
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     try {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({
-                message: 'Invalid email or password'
-            });
+            throw new ApiError(400, 'Invalid email or password');
         };
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({
-                message: 'Invalid email or password'
-            });
+            throw new ApiError(400, 'Invalid email or password');
         };
 
         const token = jwt.sign(
@@ -79,8 +72,6 @@ export const login = async (req, res) => {
         
     } catch (error) {
         console.error('Error during login:', error);
-        return res.status(500).json(
-            { message: 'Internal server error' }
-        );
+        next(error);
     }
 };
