@@ -21,7 +21,7 @@ export const register = async (req, res, next) => {
         const newUser = new User({
             email,
             password: hash,
-            role: role || 'clienteS'
+            role: role || 'cliente'
         });
 
         await newUser.save();
@@ -67,7 +67,12 @@ export const login = async (req, res, next) => {
 
         res.status(200).json({
             message: 'Login successful',
-            token: token
+            token: token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                role: user.role
+            }
         });
         
     } catch (error) {

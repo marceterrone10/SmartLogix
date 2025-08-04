@@ -33,7 +33,16 @@ const ticketSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         default: null
-    }},
+    },
+    messages: [
+    {
+        from: String,
+        role: String,
+        message: String,
+        timestamp: Date
+    }
+    ],
+    },
     {
         timestamps: true
     }

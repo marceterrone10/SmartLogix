@@ -52,20 +52,20 @@ export const getTickets = async (req, res, next) => {
                 priority: ticket.priority,
                 category: ticket.category,
                 status: ticket.status,
-                createdBy: {
+                createdBy: ticket.createdBy ? {
                     id: ticket.createdBy._id,
                     name: ticket.createdBy.name,
                     email: ticket.createdBy.email
-                },
+                } : null,
                 assignedTo: ticket.assignedTo ? {
                     id: ticket.assignedTo._id,
                     name: ticket.assignedTo.name,
                     email: ticket.assignedTo.email
                 } : null
             }))
-        }
-        )
+        });
     } catch (error) {
+        console.error('Error retrieving tickets:', error);
         next(error);
     };
 };

@@ -7,7 +7,7 @@ import { validateRequest } from '../middlewares/validateRequest.js';
 const router = Router();
 
 router.post('/', authMiddleware, checkRole(['cliente']), validateRequest(ticketSchema), createTicket);
-router.get('/', authMiddleware, checkRole(['admin', 'tecnico', 'cliente']), getTickets);
+router.get('/', authMiddleware, checkRole(['admin', 'tecnico']), getTickets);
 router.get('/:id', authMiddleware, checkRole(['admin', 'tecnico', 'cliente']), getTicketById);
 router.put('/:id', authMiddleware, checkRole(['admin', 'tecnico']), updateTicket);
 router.patch('/:id', authMiddleware, checkRole(['admin', 'tecnico']), cancelTicket);
