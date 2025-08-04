@@ -56,7 +56,7 @@ export const initSocket = (server) => {
             };
 
             io.to(ticketId).emit('message', newMessage);
-
+            
             // Guardamos el mensaje en la base de datos
             try {
                 await Ticket.findByIdAndUpdate(ticketId, {
