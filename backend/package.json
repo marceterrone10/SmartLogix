@@ -23,6 +23,7 @@
     "mongoose": "^8.16.5",
     "morgan": "^1.10.1",
     "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "supertest": "^7.1.4"
   },
   "devDependencies": {
